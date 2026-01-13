@@ -1,6 +1,6 @@
 """
-莫連投資代理人主程式 - 整合大戶投資審核系統
-Google 開發計畫整合 v2.8
+大戶投資審核模組 - Google 開發計畫整合
+專為大戶投資設計的審核系統，符合金融監管要求
 """
 
 import streamlit as st
@@ -20,22 +20,26 @@ if sys.platform == 'win32':
 
 # 設定頁面配置
 st.set_page_config(
-    page_title="莫連投資代理人",
+    page_title="大戶投資審核系統",
     page_icon="",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# 整合深色主題 CSS
+# 大戶審核深色主題 CSS
 st.markdown("""
 <style>
-/* 整合深色主題 */
+/* 大戶審核深色主題 */
 .stApp {
     background-color: #0a0a0a;
     color: #ffffff;
 }
 
 /* 頂部導航欄 */
+.st-emotion-cache-1 {
+    background-color: #1a1a1a !important;
+}
+
 [data-testid="stHeader"] {
     background-color: #1a1a1a !important;
     color: #ff6b35 !important;
@@ -73,25 +77,12 @@ st.markdown("""
 }
 
 /* 輸入框樣式 */
-.stTextInput > div > div > input,
-.stNumberInput > div > div > input {
+.stTextInput > div > div > input {
     background-color: #1a1a1a !important;
     color: #ffffff !important;
     border: 2px solid #ff6b35 !important;
     border-radius: 8px !important;
     box-shadow: 0 0 10px rgba(255, 107, 53, 0.3) !important;
-}
-
-/* 功能卡片 */
-.feature-card {
-    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-    border: 2px solid #ff6b35;
-    color: #ff6b35;
-    padding: 25px;
-    border-radius: 15px;
-    margin: 15px 0;
-    box-shadow: 0 0 30px rgba(255, 107, 53, 0.4);
-    text-align: center;
 }
 
 /* 審核卡片 */
@@ -146,11 +137,31 @@ st.markdown("""
     font-family: 'Courier New', monospace;
     color: #ffffff;
 }
+
+/* 警告狀態 */
+.warning-status {
+    background: linear-gradient(135deg, #cc0000 0%, #990000 100%);
+    color: #ffffff;
+    padding: 15px;
+    border-radius: 8px;
+    border: 2px solid #ff6666;
+    animation: blink 2s infinite;
+}
+
+@keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0.7; }
+}
 </style>
 """, unsafe_allow_html=True)
 
-# ==================== 審核系統核心函數 ====================
+# 頂部標題
+st.markdown('<div class="audit-card">', unsafe_allow_html=True)
+st.markdown('<h1 style="color: #ff6b35; text-align: center;">🏛 大戶投資審核系統</h1>', unsafe_allow_html=True)
+st.markdown('<h2 style="color: #ff6b35; text-align: center;">Google 開發計畫整合 v2.8</h2>', unsafe_allow_html=True)
+st.markdown('</div>', unsafe_allow_html=True)
 
+# 初始化審核數據庫
 def init_audit_database():
     """初始化審核數據庫"""
     try:
@@ -295,8 +306,6 @@ def generate_compliance_check(portfolio_value: float) -> Dict:
     except Exception as e:
         return {"error": str(e)}
 
-# ==================== 審核介面函數 ====================
-
 def show_audit_interface():
     """顯示審核介面"""
     st.markdown('<div class="audit-card">', unsafe_allow_html=True)
@@ -413,110 +422,36 @@ def show_compliance_dashboard():
     st.dataframe(risk_data, use_container_width=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
-# ==================== 其他功能模組 ====================
-
-def show_investment_dashboard():
-    """顯示投資儀表板"""
-    st.markdown('<div class="feature-card">', unsafe_allow_html=True)
-    st.markdown('<h2 style="color: #ff6b35;">💰 投資儀表板</h2>', unsafe_allow_html=True)
-    st.markdown('</div>', unsafe_allow_html=True)
-    
-    col1, col2, col3 = st.columns(3)
-    
-    with col1:
-        st.metric("總資產", "NT$ 15,234,567", "+2.3%")
-    with col2:
-        st.metric("今日收益", "NT$ 45,678", "+1.2%")
-    with col3:
-        st.metric("年化報酬率", "12.5%", "+0.8%")
-    
-    st.markdown("---")
-    st.info("📊 投資組合詳細分析將顯示在這裡...")
-
-def show_market_analysis():
-    """顯示市場分析"""
-    st.markdown('<div class="feature-card">', unsafe_allow_html=True)
-    st.markdown('<h2 style="color: #ff6b35;">📈 市場分析</h2>', unsafe_allow_html=True)
-    st.markdown('</div>', unsafe_allow_html=True)
-    
-    st.info("🔍 市場趨勢分析將顯示在這裡...")
-
-def show_portfolio_management():
-    """顯示投資組合管理"""
-    st.markdown('<div class="feature-card">', unsafe_allow_html=True)
-    st.markdown('<h2 style="color: #ff6b35;">📊 投資組合管理</h2>', unsafe_allow_html=True)
-    st.markdown('</div>', unsafe_allow_html=True)
-    
-    st.info("📋 投資組合管理功能將顯示在這裡...")
-
-# ==================== 主程式 ====================
-
 def main():
     """主程式"""
-    # 初始化審核數據庫
+    # 初始化數據庫
     if not init_audit_database():
         st.error("❌ 系統初始化失敗，無法啟動審核系統")
         return
     
-    # 頂部標題
-    st.markdown('<div class="feature-card">', unsafe_allow_html=True)
-    st.markdown('<h1 style="color: #ff6b35; text-align: center;">🤖 莫連投資代理人</h1>', unsafe_allow_html=True)
-    st.markdown('<h2 style="color: #ff6b35; text-align: center;">Google 開發計畫整合 v2.8</h2>', unsafe_allow_html=True)
-    st.markdown('</div>', unsafe_allow_html=True)
-    
-    # 側邊欄選單
+    # 側邊選項
     with st.sidebar:
-        st.markdown('<div class="feature-card">', unsafe_allow_html=True)
-        st.markdown('<h3 style="color: #ff6b35;">🎯 功能選單</h3>', unsafe_allow_html=True)
+        st.markdown('<div class="audit-card">', unsafe_allow_html=True)
+        st.markdown('<h3 style="color: #ff6b35;">🏛 審核功能</h3>', unsafe_allow_html=True)
         st.markdown('</div>', unsafe_allow_html=True)
         
-        # 主要功能選項
         page = st.radio("選擇功能", [
-            "💰 投資儀表板",
-            "📈 市場分析", 
-            "📊 投資組合管理",
-            "🏛 大戶投資審核",
-            "⚙️ 系統設定"
+            "🔍 新增審核", 
+            "📊 審核報告", 
+            "⚖️ 合規儀表板",
+            "📋 系統設定"
         ])
         
-        # 大戶投資審核子選單
-        if page == "🏛 大戶投資審核":
-            st.markdown("---")
-            st.markdown('<div class="audit-card">', unsafe_allow_html=True)
-            st.markdown('<h4 style="color: #ff6b35;">🏛 審核功能</h4>', unsafe_allow_html=True)
-            st.markdown('</div>', unsafe_allow_html=True)
-            
-            audit_page = st.radio("選擇審核功能", [
-                "🔍 新增審核",
-                "📊 審核報告", 
-                "⚖️ 合規儀表板"
-            ])
-        else:
-            audit_page = None
+        if page == "🔍 新增審核":
+            show_audit_interface()
+        elif page == "📊 審核報告":
+            show_audit_reports()
+        elif page == "⚖️ 合規儀表板":
+            show_compliance_dashboard()
     
     # 主要內容區
-    if page == "💰 投資儀表板":
-        show_investment_dashboard()
-    elif page == "📈 市場分析":
-        show_market_analysis()
-    elif page == "📊 投資組合管理":
-        show_portfolio_management()
-    elif page == "🏛 大戶投資審核":
-        if audit_page == "🔍 新增審核":
-            show_audit_interface()
-        elif audit_page == "📊 審核報告":
-            show_audit_reports()
-        elif audit_page == "⚖️ 合規儀表板":
-            show_compliance_dashboard()
-    elif page == "⚙️ 系統設定":
-        st.markdown('<div class="feature-card">', unsafe_allow_html=True)
-        st.markdown('<h2 style="color: #ff6b35;">⚙️ 系統設定</h2>', unsafe_allow_html=True)
-        st.markdown('</div>', unsafe_allow_html=True)
-        st.info("🔧 系統設定功能將顯示在這裡...")
-    
-    # 保持頁面狀態
     if 'selected_page' not in st.session_state:
-        st.session_state.selected_page = "💰 投資儀表板"
+        st.session_state.selected_page = "🔍 新增審核"
     
     st.session_state.selected_page = page
 
