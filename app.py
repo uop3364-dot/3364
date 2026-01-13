@@ -14,6 +14,24 @@ import requests
 from typing import Dict, List, Optional
 import sqlite3
 
+# 🔒 密碼保護機制 (必須放在程式最開頭)
+if 'authenticated' not in st.session_state:
+    st.session_state.authenticated = False
+
+def login_screen():
+    st.title("🔒 MO-LIEN SYSTEM LOGIN")
+    password = st.text_input("請輸入密碼", type="password")
+    if st.button("🚀 登入"):
+        if password == "1234":
+            st.session_state.authenticated = True
+            st.rerun()
+        else:
+            st.error("❌ 密碼錯誤")
+
+if not st.session_state.authenticated:
+    login_screen()
+    st.stop()  # 密碼沒過，後面的功能通通不准跑
+
 # 解決 Windows 編碼問題
 if sys.platform == 'win32':
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
@@ -459,10 +477,7 @@ def main():
         return
     
     # 頂部標題
-    st.markdown('<div class="feature-card">', unsafe_allow_html=True)
-    st.markdown('<h1 style="color: #ff6b35; text-align: center;">🤖 莫連投資代理人</h1>', unsafe_allow_html=True)
-    st.markdown('<h2 style="color: #ff6b35; text-align: center;">Google 開發計畫整合 v2.8</h2>', unsafe_allow_html=True)
-    st.markdown('</div>', unsafe_allow_html=True)
+    st.title("🤖 莫連投資代理人 v2.8")
     
     # 側邊欄選單
     with st.sidebar:
