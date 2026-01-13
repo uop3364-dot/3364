@@ -1,21 +1,17 @@
 import streamlit as st
-from datetime import datetime
 
-# 1. 頁面設定 (必須放在第一行)
-st.set_page_config(page_title="莫連投資代理人", layout="wide")
+# 1. 基礎設定
+st.set_page_config(page_title="莫連投資代理人", layout="centered")
 
-# 2. 簡單的登入邏輯
+# 2. 密碼驗證邏輯
 if 'auth' not in st.session_state:
     st.session_state.auth = False
 
-# 3. 介面樣式 (修正後的版本)
-def apply_style():
-    st.markdown('<style>div.stButton > button {width: 100%;}</style>', unsafe_content_html=True)
-
-# 4. 登入介面
+# 3. 介面邏輯
 if not st.session_state.auth:
-    st.title("🔒 莫連投資系統")
-    pwd = st.text_input("輸入密碼", type="password")
+    st.header("🔒 莫連投資系統")
+    # 簡單的登入表單
+    pwd = st.text_input("請輸入密碼", type="password")
     if st.button("點擊登入"):
         if pwd == "1234":
             st.session_state.auth = True
@@ -23,25 +19,24 @@ if not st.session_state.auth:
         else:
             st.error("密碼錯誤")
 else:
-    # 5. 登入後的旗艦內容
-    apply_style()
-    st.title("🤖 莫連投資代理人 v2.7")
+    # 登入成功後的畫面
+    st.success("✅ 雲端連線成功！歡迎莫連老師")
     
-    # 永豐大戶投監控
-    st.subheader("🏦 永豐大戶投資產")
-    c1, c2 = st.columns(2)
-    c1.metric("活存餘額", "NT$ 1,250,000", "利率 1.5%")
-    c2.metric("今日預估損益", "+$12,400", "2.1%")
+    # 永豐大戶投監控區
+    st.subheader("🏦 永豐大戶投 - 活存狀態")
+    st.metric(label="活存利率", value="1.5%", delta="優於一般活存")
+    st.write("目前資金已就緒，隨時可進行選股配置。")
     
     st.divider()
     
-    # 對話框
-    st.info("🤖 莫連，連線完全成功！現在系統已在雲端穩定運行。")
+    # 功能測試區
+    st.subheader("🤖 AI 選股助理")
+    stock_id = st.text_input("輸入台股代號 (例如: 2330)")
+    if stock_id:
+        st.info(f"正在為莫連老師分析 {stock_id} ...")
+        st.write("📊 目前趨勢：強勢整理中")
     
-    stock = st.text_input("🔍 輸入台股代號分析 (如 2330):")
-    if stock:
-        st.success(f"📈 正在分析 {stock}... 趨勢穩定，建議配合大戶投活存靈活配置。")
-    
-    if st.sidebar.button("🚪 安全登出"):
+    # 側邊欄登出
+    if st.sidebar.button("安全登出"):
         st.session_state.auth = False
         st.rerun()
